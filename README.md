@@ -124,10 +124,3 @@ Outside of free tier you will be charged for the consumption of the services use
 ### Clean up
 
 Within the amplify UI navigate to your app, on the top right select `Actions` and then `Delete app`.
-
-### Contributors
-- Daniel Bloy  
-- Bob Strahan  
-- Vishal Nayak  
-- EJ Ferrell  
-- Kishore Dhamodaran
