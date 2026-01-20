@@ -1,32 +1,37 @@
-import { post } from '@aws-amplify/api';
-//async function ProcessChatTextAPI(content, sourceLang, targetLang, terminologyNames)
+// Using fetch directly for unauthenticated API calls
 async function ProcessChatTextAPI(content, sourceLang, targetLang) {
-    const apiName = 'amazonTranslateAPI';
+    // Get the API endpoint from environment or use the production endpoint
+    const apiEndpoint = process.env.REACT_APP_TRANSLATE_API_ENDPOINT || 'https://rhgmz55rmh.execute-api.us-east-1.amazonaws.com/production';
     const path = '/translate';
-    const myInit = { // OPTIONAL
-        body: { 'content': content, 'sourceLang': sourceLang, 'targetLang': targetLang },
-        //body: { 'content': content, 'sourceLang': sourceLang, 'targetLang': targetLang, 'terminologyNames': terminologyNames },
-        headers: {
-        }, // OPTIONAL
+    const url = `${apiEndpoint}${path}`;
+    
+    const requestBody = {
+        content: content,
+        sourceLang: sourceLang,
+        targetLang: targetLang
     };
+    
     console.log("ProcessChatTextAPI: ", content);
     console.log("ProcessChatTextAPI: ", sourceLang);
     console.log("ProcessChatTextAPI: ", targetLang);
-    //console.log("ProcessChatTextAPI: ", terminologyNames);
-    console.log("ProcessChatTextAPI: ", path);
-    console.log("ProcessChatTextAPI: ", myInit);
-    console.log("API Name: ", apiName);
+    console.log("ProcessChatTextAPI URL: ", url);
+    console.log("ProcessChatTextAPI Body: ", requestBody);
+    
     try {
-        const result = await post({
-            apiName,
-            path,
-            options: myInit,
-        }).response
-        console.log("Translated Message Payload: ", result);
-        const res = result.body
-        console.log("Translated Message: ", res);
-        const resp = await res.json();
-        console.log("Response: ", resp);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const resp = await response.json();
+        console.log("Translated Message Payload: ", resp);
         return resp;
     }
     catch (error) {
