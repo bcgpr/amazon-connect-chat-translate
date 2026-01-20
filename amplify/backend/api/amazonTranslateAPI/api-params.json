@@ -4,14 +4,8 @@
       "name": "/translate",
       "lambdaFunction": "amazonTranslateLambda",
       "privacy": {
-        "private": true,
-        "auth": [
-          "/POST",
-          "/GET",
-          "/PUT",
-          "/PATCH",
-          "/DELETE"
-        ]
+        "private": false,
+        "open": true
       },
       "policyResourceName": "/translate"
     }
@@ -25,7 +19,7 @@
   ],
   "privacy": {
     "auth": 1,
-    "unauth": 0,
+    "unauth": 1,
     "authRoleName": "amplify-vfgolddemo-dev-212450-authRole",
     "unAuthRoleName": "amplify-vfgolddemo-dev-212450-unauthRole"
   },

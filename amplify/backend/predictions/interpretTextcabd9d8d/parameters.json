@@ -9,5 +9,5 @@
     },
     "interpretType": "interpretText",
     "type": "ALL",
-    "access": "auth"
+    "access": "authAndGuest"
 }
