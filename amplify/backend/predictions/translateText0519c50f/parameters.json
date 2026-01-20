@@ -10,5 +10,5 @@
     "convertType": "translateText",
     "sourceLang": "en",
     "targetLang": "de",
-    "access": "auth"
+    "access": "authAndGuest"
 }
