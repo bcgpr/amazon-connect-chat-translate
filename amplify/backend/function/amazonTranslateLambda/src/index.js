@@ -1,37 +1,65 @@
 const AWS = require('aws-sdk');
 
-const translate = new AWS.Translate({ apiVersion: '2017-07-01' }); // Fix API version (best practice)
+const translate = new AWS.Translate({ apiVersion: '2017-07-01' });
+
+// CORS headers for all responses
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent",
+  "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
+};
 
 exports.handler = (event, context, callback) => {
-  let payload = JSON.parse(event.body);
-  console.log("event: ", event);
-  //console.log("event: ", payload.terminologyNames);
-  // body: '{"content":"hello","sourceLang":"en","targetLang":"en"}'
+  console.log("event: ", JSON.stringify(event));
+  
+  // Handle CORS preflight OPTIONS request
+  if (event.httpMethod === 'OPTIONS') {
+    callback(null, {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: JSON.stringify({ message: 'CORS preflight successful' })
+    });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(event.body);
+  } catch (e) {
+    callback(null, {
+      statusCode: 400,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: 'Invalid JSON in request body' })
+    });
+    return;
+  }
 
   let params = {
     SourceLanguageCode: payload.sourceLang,
-    /* required */
     TargetLanguageCode: payload.targetLang,
-    /* required */
     Text: payload.content,
-    /* required */
-    //TerminologyNames: payload.terminologyNames
   };
   console.log("parameters: " + JSON.stringify(params));
 
   translate.translateText(
     params,
     function(error, response) {
-
       if (error) {
         console.log(error);
-        callback(null, { "statusCode": 500, headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" }, "body": JSON.stringify((error)) });
+        callback(null, {
+          statusCode: 500,
+          headers: corsHeaders,
+          body: JSON.stringify(error)
+        });
       }
       else {
-        console.log('respoonse ' + JSON.stringify(response));
-        callback(null, { "statusCode": 200, headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" }, "body": JSON.stringify((response)) });
+        console.log('response ' + JSON.stringify(response));
+        callback(null, {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify(response)
+        });
       }
     }
-
   );
 };
