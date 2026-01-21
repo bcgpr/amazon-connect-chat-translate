@@ -190,19 +190,45 @@ const Ccp = () => {
     // *****
     useEffect(() => {
         const connectUrl = process.env.REACT_APP_CONNECT_INSTANCE_URL;
+        
+        // Check if Connect URL is configured
+        if (!connectUrl) {
+            console.error("REACT_APP_CONNECT_INSTANCE_URL is not configured");
+            return;
+        }
+
+        // Initialize the CCP
         window.connect.agentApp.initApp(
             "ccp",
             "ccp-container",
             connectUrl + "/connect/ccp-v2/", { 
                 ccpParams: { 
                     region: process.env.REACT_APP_CONNECT_REGION,
-                    pageOptions: {                  // optional
-                        enableAudioDeviceSettings: true, // optional, defaults to 'false'
-                        enablePhoneTypeSettings: true // optional, defaults to 'true'
-                      }
-                } 
+                    loginUrl: connectUrl + "/connect/login",
+                    pageOptions: {
+                        enableAudioDeviceSettings: true,
+                        enablePhoneTypeSettings: true
+                    }
+                },
+                // Redirect to Connect login if session is not available
+                onError: (error) => {
+                    console.error("CCP Error: ", error);
+                    if (error && (error.type === 'unauthorized' || error.type === 'access_denied')) {
+                        console.log("Session not available, redirecting to Connect login...");
+                        window.location.href = connectUrl + "/connect/login?destination=" + encodeURIComponent(window.location.href);
+                    }
+                }
             }
         );
+
+        // Add auth failure handler
+        if (window.connect.core) {
+            window.connect.core.onAuthFail(() => {
+                console.log("Authentication failed, redirecting to Connect login...");
+                window.location.href = connectUrl + "/connect/login?destination=" + encodeURIComponent(window.location.href);
+            });
+        }
+
         subscribeConnectEvents();
     }, []);
 
