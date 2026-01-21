@@ -57,6 +57,10 @@ const Chatroom = (props) => {
         }
         let destLang = languageTranslate.find(o => o.contactId === currentContactId[0]);
         console.log("destLang: ", destLang);
+        
+        // Default to Spanish ('es') if customer hasn't said anything yet
+        const targetLanguage = destLang?.lang || 'es';
+        console.log("Target language: ", targetLanguage);
 
         // translate the agent message  ** Swap the below two round if you wnat to test custom termonologies **
         // let translatedMessage = await translateText(newMessage, 'en', destLang.lang);
@@ -67,7 +71,7 @@ const Chatroom = (props) => {
          
          ******************************************************************************************************/
         console.log(newMessage);
-        let translatedMessageAPI = await translateTextAPI(newMessage, 'en', destLang.lang); // Provide a custom terminology created outside of this deployment
+        let translatedMessageAPI = await translateTextAPI(newMessage, 'en', targetLanguage); // Provide a custom terminology created outside of this deployment
         //let translatedMessageAPI = await translateTextAPI(newMessage, 'en', destLang.lang, ['connectChatTranslate']); // Provide a custom terminology created outside of this deployment
         let translatedMessage = translatedMessageAPI.TranslatedText
 
